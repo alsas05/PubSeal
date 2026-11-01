@@ -1,0 +1,25 @@
+{
+  "name": "pubseal",
+  "version": "1.0.0",
+  "description": "PubSeal - Secure Digital Ownership Registry for Writers",
+  "scripts": {
+    "start:backend": "cd backend && node server.js",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:admin": "cd admin && npm run dev",
+    "build:frontend": "cd frontend && npm run build",
+    "build:admin": "cd admin && npm run build",
+    "test": "node backend/tests/e2e_full_suite.test.js"
+  },
+  "keywords": [
+    "pubseal",
+    "cryptography",
+    "writers",
+    "sha256",
+    "digital-certificate",
+    "registry"
+  ],
+  "author": "PubSeal Engineering",
+  "license": "MIT"
+}
+
