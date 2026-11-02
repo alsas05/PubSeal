@@ -866,11 +866,11 @@ Whether you're wondering what you need to create an account, how cryptographic t
       {/* 1. GREETING SPEECH BUBBLE TOAST (When collapsed) */}
       {!isOpen && showToast && (
         <div className="mb-3 animate-fade-in flex items-center space-x-2.5 p-3 sm:p-3.5 rounded-2xl bg-mocha-900/95 border border-gold-500/40 shadow-mocha-deep text-xs text-mocha-100 max-w-[270px] sm:max-w-xs backdrop-blur-md">
-          <div className="w-9 h-9 rounded-full bg-gold-500/20 border border-gold-400/40 flex items-center justify-center p-1.5 text-gold-300 shrink-0 overflow-hidden shadow-inner-gold">
+          <div className="w-9 h-9 rounded-full bg-gold-500/20 flex items-center justify-center p-1 text-gold-300 shrink-0 overflow-hidden shadow-inner-gold">
             <img
-              src="/PubSeal_logo_gold_tight.png"
+              src="/PubSeal_angel.png"
               alt="PubSeal Angel"
-              className="w-full h-full object-contain filter drop-shadow-[0_0_6px_rgba(203,159,84,0.6)]"
+              className="w-full h-full object-contain filter drop-shadow-[0_0_8px_rgba(230,207,161,0.9)]"
             />
           </div>
           <div className="flex-1 pr-1">
@@ -898,14 +898,14 @@ Whether you're wondering what you need to create an account, how cryptographic t
           <div className="p-4 bg-gradient-to-r from-mocha-900 via-mocha-900/95 to-mocha-950 border-b border-mocha-800/90 flex items-center justify-between shrink-0">
             <div className="flex items-center space-x-3">
               <div className="relative">
-                <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-gold-500/20 via-mocha-900 to-mocha-950 border border-gold-500/40 flex items-center justify-center p-1.5 shadow-sm overflow-hidden">
+                <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-gold-500/20 via-mocha-900 to-mocha-950 flex items-center justify-center p-1 shadow-sm overflow-hidden border border-mocha-800">
                   <img
-                    src="/PubSeal_logo_gold_tight.png"
+                    src="/PubSeal_angel.png"
                     alt="Sage PubSeal Angel Crest"
-                    className="w-full h-full object-contain filter drop-shadow-[0_0_8px_rgba(203,159,84,0.6)]"
+                    className="w-full h-full object-contain filter drop-shadow-[0_0_10px_rgba(230,207,161,0.95)] drop-shadow-[0_0_18px_rgba(203,159,84,0.7)]"
                   />
                 </div>
-                <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-500 border-2 border-mocha-950 flex items-center justify-center">
+                <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-500 border-2 border-mocha-950 flex items-center justify-center shadow-[0_0_8px_rgba(52,211,153,0.8)]">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-200 animate-ping opacity-75" />
                 </span>
               </div>
@@ -979,9 +979,9 @@ Whether you're wondering what you need to create an account, how cryptographic t
                   {msg.title && (
                     <div className="font-serif font-bold text-gold-300 text-xs pb-1 mb-1.5 border-b border-mocha-800/80 flex items-center space-x-1.5">
                       <img
-                        src="/PubSeal_logo_gold_tight.png"
+                        src="/PubSeal_angel.png"
                         alt="Angel"
-                        className="w-3.5 h-3.5 object-contain shrink-0 filter drop-shadow-[0_0_4px_rgba(203,159,84,0.5)]"
+                        className="w-4 h-4 object-contain shrink-0 filter drop-shadow-[0_0_6px_rgba(230,207,161,0.8)]"
                       />
                       <span>{msg.title}</span>
                     </div>
@@ -1016,16 +1016,15 @@ Whether you're wondering what you need to create an account, how cryptographic t
             {isTyping && (
               <div className="flex items-center space-x-2 text-mocha-400 p-2 rounded-xl bg-mocha-900/50 w-fit animate-pulse">
                 <img
-                  src="/PubSeal_logo_gold_tight.png"
+                  src="/PubSeal_angel.png"
                   alt="Sage Angel"
-                  className="w-4 h-4 object-contain animate-bounce"
+                  className="w-4 h-4 object-contain animate-bounce filter drop-shadow-[0_0_6px_rgba(230,207,161,0.8)]"
                 />
                 <span className="text-[11px] font-mono text-gold-300/80">
                   Sage is typing...
                 </span>
               </div>
             )}
-
             <div ref={messagesEndRef} />
           </div>
 
@@ -1056,33 +1055,40 @@ Whether you're wondering what you need to create an account, how cryptographic t
         </div>
       )}
 
-      {/* 3. FLOATING TRIGGER BUTTON */}
+      {/* 3. FLOATING TRIGGER BUTTON (No golden border, larger illuminated angel) */}
       <button
         onClick={() => {
           setIsOpen(!isOpen);
           setShowToast(false);
         }}
-        className={`relative w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-300 shadow-xl group ${
+        className={`relative w-15 h-15 sm:w-16 sm:h-16 rounded-2xl sm:rounded-3xl flex items-center justify-center transition-all duration-300 shadow-2xl group border-0 focus:outline-none ${
           isOpen
-            ? 'bg-mocha-850 border border-mocha-700 text-mocha-300 hover:text-gold-300'
-            : 'bg-gradient-to-br from-mocha-900 via-mocha-900 to-mocha-950 border border-gold-500/40 text-gold-300 hover:border-gold-400 shadow-gold-glow hover:scale-105'
+            ? 'bg-mocha-900 text-mocha-300 hover:text-gold-300 shadow-[0_12px_40px_rgba(0,0,0,0.85)]'
+            : 'bg-gradient-to-br from-mocha-900/95 via-mocha-900 to-mocha-950 text-gold-300 hover:scale-105 shadow-[0_12px_40px_rgba(0,0,0,0.9)]'
         }`}
         title={isOpen ? 'Close Sage Assistant' : 'Ask Sage — PubSeal AI Navigator'}
       >
+        {/* Ambient gold illumination glow behind button */}
         {!isOpen && (
-          <span className="absolute inset-0 rounded-2xl bg-gold-500/20 animate-ping opacity-30 pointer-events-none" />
+          <span className="absolute -inset-1 rounded-2xl sm:rounded-3xl bg-gold-400/25 blur-xl opacity-80 group-hover:opacity-100 transition-opacity pointer-events-none" />
         )}
 
         {isOpen ? (
           <X className="w-6 h-6 transition-transform group-hover:rotate-90 text-gold-300" />
         ) : (
           <div className="relative flex items-center justify-center">
+            {/* Direct Angel Core Illumination Glow */}
+            <div className="absolute w-12 h-12 rounded-full bg-gold-400/40 blur-md pointer-events-none group-hover:bg-gold-400/55 transition-all duration-300" />
+            
+            {/* Larger Illuminated Angel Emblem */}
             <img
-              src="/PubSeal_logo_gold_tight.png"
+              src="/PubSeal_angel.png"
               alt="PubSeal Angel"
-              className="w-9 h-9 object-contain filter drop-shadow-[0_0_10px_rgba(203,159,84,0.75)] group-hover:scale-110 transition-transform duration-300"
+              className="relative w-11 h-11 sm:w-12 sm:h-12 object-contain filter drop-shadow-[0_0_12px_rgba(230,207,161,0.95)] drop-shadow-[0_0_24px_rgba(203,159,84,0.85)] group-hover:scale-110 transition-transform duration-300"
             />
-            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-mocha-950" />
+            
+            {/* Online active status dot */}
+            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-mocha-950 shadow-[0_0_8px_rgba(52,211,153,0.85)]" />
           </div>
         )}
       </button>
