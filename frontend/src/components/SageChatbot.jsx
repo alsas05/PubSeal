@@ -21,12 +21,179 @@ import {
   Scale,
   User,
   LogIn,
-  AlertCircle
+  AlertCircle,
+  Heart
 } from 'lucide-react';
 
 /**
- * Intelligent Intent Definitions for Sage
- * Covers all author doubts, legal questions, account requirements, and navigation
+ * Human Social & Conversational Intents
+ * Handles gratitude, small talk, check-ins, acknowledgments, and natural human dialogues
+ */
+const HUMAN_CONVERSATIONAL_INTENTS = [
+  // 1. GRATITUDE & THANKS (e.g. "thank you", "thanks", "appreciate it")
+  {
+    id: 'gratitude',
+    patterns: [
+      /(thank\s*(you|u)|thanks|thx|ty|appreciate\s*(it|you|your\s*help)|grateful|many\s*thanks)/i
+    ],
+    getReply: (user) => {
+      const authorName = user?.fullName ? `, ${user.fullName}` : '';
+      const replies = [
+        `You're very welcome${authorName}! 😊 Always a pleasure to help. If any other doubts pop up while writing or registering your work, I'm right here. Wishing you joyful writing! ✦`,
+        `You are most welcome${authorName}! ✦ Protecting your creative writing is what I'm here for. Let me know whenever you need anything else!`,
+        `Anytime at all! It's an honor to assist authors and creators. May your words flow effortlessly today! ✨`
+      ];
+      return replies[Math.floor(Math.random() * replies.length)];
+    }
+  },
+
+  // 2. ACKNOWLEDGMENTS & UNDERSTANDING (e.g. "ok", "okay", "got it", "cool", "understood", "makes sense")
+  {
+    id: 'acknowledgments',
+    patterns: [
+      /^(ok|okay|k|alright|cool|got\s*it|understood|makes\s*sense|sounds\s*good|perfect|awesome|great|noted|sure|fine|nice|yep|yup|right)(\s*(got\s*it|cool|understood|makes\s*sense|perfect|awesome|thanks|thank\s*you))?[\s!.,:)]*$/i
+    ],
+    getReply: () => {
+      const replies = [
+        `Wonderful! I'm glad that was clear. Let me know whenever you'd like to take the next step or explore anything else. ✦`,
+        `Splendid! Take your time exploring. I'm right here in your corner whenever you need a hand.`,
+        `Glad that makes sense! Feel free to ask anytime inspiration strikes. ✨`
+      ];
+      return replies[Math.floor(Math.random() * replies.length)];
+    }
+  },
+
+  // 3. CHECK-INS / HOW ARE YOU (e.g. "how are you", "how are you doing", "what's up")
+  {
+    id: 'how_are_you',
+    patterns: [
+      /(how\s*are\s*you|how\s*are\s*you\s*doing|how'?s\s*it\s*going|how\s*do\s*you\s*do|what'?s\s*up|sup)[\s!?.]*$/i
+    ],
+    getReply: (user) => {
+      const authorName = user?.fullName ? `, ${user.fullName}` : '';
+      const replies = [
+        `I'm doing splendidly, thank you for asking! ☕ Just keeping an eye on our authors' vaults and certificates. How is your writing or creative journey coming along today${authorName}?`,
+        `I'm feeling wonderful and inspired! Ready and eager to help. How are you doing today${authorName}? Working on any new stories or research? ✨`
+      ];
+      return replies[Math.floor(Math.random() * replies.length)];
+    }
+  },
+
+  // 4. FAREWELL & GOODBYES (e.g. "bye", "goodbye", "see you later", "good night")
+  {
+    id: 'farewell',
+    patterns: [
+      /^(bye|goodbye|cya|see\s*you|see\s*you\s*later|talk\s*to\s*you\s*later|have\s*a\s*good\s*(day|night|evening)|good\s*night|catch\s*you\s*later)[\s!.,:)]*$/i
+    ],
+    getReply: () => {
+      const replies = [
+        `Goodbye for now! 👋 May your quill stay sharp and your drafts keep growing. I'll be right here whenever you return.`,
+        `Take care! Have a wonderful day ahead. Whenever you're ready to register your next masterpiece, I'll be waiting. ✦`,
+        `Good night! Rest well and dream up wonderful stories. Talk soon! 🌙`
+      ];
+      return replies[Math.floor(Math.random() * replies.length)];
+    }
+  },
+
+  // 5. COMPLIMENTS (e.g. "you are awesome", "you're so helpful", "love this", "good job")
+  {
+    id: 'compliments',
+    patterns: [
+      /(you('re|\s*are)\s*(awesome|great|the\s*best|helpful|smart|cool|amazing|kind|sweet)|love\s*(you|this|sage)|good\s*job|nice\s*work|you\s*rock)/i
+    ],
+    getReply: () => {
+      const replies = [
+        `Aww, thank you so much! That warms my literary heart. 💫 Writing can be a solitary journey, so I'm thrilled to be here helping you protect your craft!`,
+        `That is so kind of you to say! Thank you. I truly love helping authors and creators navigate PubSeal. ✦`
+      ];
+      return replies[Math.floor(Math.random() * replies.length)];
+    }
+  },
+
+  // 6. APOLOGIES (e.g. "sorry", "my bad", "pardon")
+  {
+    id: 'apology',
+    patterns: [
+      /^(sorry|my\s*bad|i\s*apologize|excuse\s*me|pardon\s*me)[\s!.,:)]*$/i
+    ],
+    getReply: () => {
+      return `Oh, please don't apologize at all! There are no silly questions or mistakes here. How can I help you next? 😊`;
+    }
+  },
+
+  // 7. HUMOR / JOKES
+  {
+    id: 'humor',
+    patterns: [
+      /(haha|hehe|lol|lmao|tell\s*me\s*a\s*joke|joke|make\s*me\s*laugh|funny)/i
+    ],
+    getReply: () => {
+      const jokes = [
+        `Haha! Glad I could bring a smile to your desk. 😄\n\nHere's a literary one for you: *Why did the novelist sit by the radiator? Because they wanted to produce warm prose!*\n\nWhat can I help you write or protect today?`,
+        `😄 *Why did the comma break up with the apostrophe? Because it was too possessive!*\n\nLet me know if there's anything about your manuscripts or certificates I can help with!`
+      ];
+      return jokes[Math.floor(Math.random() * jokes.length)];
+    }
+  },
+
+  // 8. IDENTITY / ARE YOU HUMAN
+  {
+    id: 'identity',
+    patterns: [
+      /(who\s*(are\s*you|made\s*you|created\s*you)|what\s*are\s*you|are\s*you\s*(real|human|ai|a\s*bot|robot))/i
+    ],
+    getReply: () => {
+      return `I am **Sage**, PubSeal's resident literary assistant and platform guide! 
+
+While I am powered by code and artificial intelligence, my heart beats for authors, storytellers, and researchers. I'm here to ensure you never feel lost when registering manuscripts or proving your copyright priority.
+
+Are you currently working on a book, script, or paper?`;
+    }
+  },
+
+  // 9. AFFIRMATIONS (Yes / Sure)
+  {
+    id: 'affirmation',
+    patterns: [
+      /^(yes|yeah|yep|sure|yup|absolutely|definitely)[\s!.,:)]*$/i
+    ],
+    getReply: () => {
+      return `Awesome! What would you like to explore next? We can register an unpublished manuscript, check out the public verification tool, or review our author ownership guarantees.`;
+    },
+    actions: [
+      { label: 'Register a Work', path: '/register-work', icon: 'FileCheck2' },
+      { label: 'Public Verification', path: '/verify', icon: 'ShieldCheck' },
+      { label: 'Author Ownership Guarantee', path: '/terms#author-ownership', icon: 'Lock' }
+    ]
+  },
+
+  // 10. "I DON'T UNDERSTAND" / "EXPLAIN SIMPLY"
+  {
+    id: 'explain_simply',
+    patterns: [
+      /(i\s*don'?t\s*understand|what\s*do\s*you\s*mean|confused|explain\s*simply|in\s*simple\s*(words|terms)|eli5|too\s*complicated)/i
+    ],
+    getReply: () => {
+      return `Let me put it in plain, simple terms for you! 😊
+
+Think of PubSeal like a **digital notary** for your writing:
+1. You write a book, poem, or screenplay on your computer.
+2. Before sending it to an agent, editor, or publisher, you upload it to PubSeal.
+3. PubSeal creates a unique mathematical fingerprint (called a SHA-256 hash) of your exact file and stamps it with the date and millisecond.
+4. You get an official certificate with a QR code.
+
+If anyone ever tries to copy your ideas or claims they wrote it before you, you have undeniable mathematical proof that you already had that exact file before them!
+
+Does that make it clearer? Feel free to ask about any part of it!`;
+    },
+    actions: [
+      { label: 'How It Works Guide', path: '/#how-it-works', icon: 'BookOpen' }
+    ]
+  }
+];
+
+/**
+ * Technical, Legal & Feature Intents for PubSeal
  */
 const SAGE_INTENTS = [
   // 1. ACCOUNT CREATION & DOCUMENT REQUIREMENTS
@@ -449,12 +616,10 @@ Creating an author account is simple, free, and requires zero paperwork:
     id: 'greeting',
     patterns: [
       /^(hello|hi|hey|greetings|good\s*morning|good\s*afternoon|good\s*evening)[\s!.]*$/i,
-      /who\s*are\s*you/i,
-      /what\s*(can\s*you\s*do|is\s*sage)/i,
       /^(help|doubts|questions)[\s!.]*$/i
     ],
-    title: 'Greetings from Sage',
-    answer: `Greetings! I am **Sage**, your dedicated PubSeal literary navigator and guide.
+    title: null,
+    answer: `Hello there! I am **Sage**, your dedicated PubSeal literary assistant and guide. ✦
 
 I can help answer any questions or doubts you have, including:
 • **Account Setup**: Do you need documents? *(No, none at all!)*
@@ -465,31 +630,45 @@ I can help answer any questions or doubts you have, including:
 
 What questions or doubts may I clear for you today?`,
     actions: [
+      { label: 'Do I Need Documents to Sign Up?', path: '__query:do i need documents to create an account', icon: 'HelpCircle' },
       { label: 'Register a Work', path: '/register-work', icon: 'FileCheck2' },
-      { label: 'Public Verification', path: '/verify', icon: 'ShieldCheck' },
-      { label: 'Read Terms of Service', path: '/terms', icon: 'Scale' }
+      { label: 'Public Verification', path: '/verify', icon: 'ShieldCheck' }
     ]
   }
 ];
 
 /**
  * Intelligent Query Matcher
- * Strips conversational fillers and tests high-priority regex patterns
+ * 1. Checks human conversational and social intents first (gratitude, small talk, pleasantries)
+ * 2. Checks technical, legal, and navigational doubts
+ * 3. Falls back gracefully with friendly human-like assistance
  */
 function findBestIntent(query, user, currentPath) {
   const trimmed = query.trim();
 
-  // Strip conversational conversational prefixes (e.g. "no..", "like", "actually", "wait", "i mean", "what about")
+  // STEP 1: Check human social & conversational intents (gratitude, "thank you", "ok", "how are you", "bye", etc.)
+  for (const human of HUMAN_CONVERSATIONAL_INTENTS) {
+    for (const pattern of human.patterns) {
+      if (pattern.test(trimmed)) {
+        return {
+          title: null, // Displays naturally without rigid formal banners
+          text: human.getReply(user),
+          actions: human.actions || []
+        };
+      }
+    }
+  }
+
+  // Strip conversational prefixes for domain questions (e.g. "no..", "like", "actually", "wait", "i mean", "what about")
   const cleaned = trimmed
     .replace(/^(no|yes|well|actually|wait|i mean|like|hey|so|uh|um)\s*([.,;!?]+\s*|\s+)/i, '')
     .trim();
 
-  // 1. Test every pattern against both raw query and cleaned query
+  // STEP 2: Check domain & platform intents
   for (const intent of SAGE_INTENTS) {
     for (const pattern of intent.patterns) {
       if (pattern.test(trimmed) || pattern.test(cleaned)) {
         let text = intent.answer;
-        // Personalize greeting if user is authenticated
         if (intent.id === 'greeting' && user) {
           text = `Greetings, **${user.fullName || 'Author'}**! I am **Sage**, your PubSeal literary navigator.\n\nI can help you manage your registered works, verify documents, or answer questions regarding your digital ownership certificates.\n\nWhat would you like to explore today?`;
         }
@@ -502,7 +681,7 @@ function findBestIntent(query, user, currentPath) {
     }
   }
 
-  // 2. Multi-keyword heuristic fallback for unscripted queries
+  // STEP 3: Multi-keyword heuristic fallback
   const lower = cleaned.toLowerCase();
 
   if (lower.includes('document') && (lower.includes('create') || lower.includes('account') || lower.includes('sign') || lower.includes('need') || lower.includes('require'))) {
@@ -525,18 +704,16 @@ function findBestIntent(query, user, currentPath) {
     if (matched) return { title: matched.title, text: matched.answer, actions: matched.actions };
   }
 
-  // 3. Conversational Fallback
+  // STEP 4: Friendly Human Fallback
   return {
-    title: 'PubSeal Navigator Guidance',
-    text: `I want to give you an exact and meaningful answer regarding *"_${query}_"*. 
+    title: null,
+    text: `I want to make sure I give you a clear and helpful answer regarding *"_${query}_"*. 
 
-Here are the most common topics authors ask about:
+Could you tell me a little more, or choose from one of these popular topics?
 • **Account Setup**: You do **not** need any documents or ID to create a free account.
-• **100% Ownership**: You retain full copyright, moral rights, and commercial ownership of your writing.
-• **Cryptographic Proof**: We calculate deterministic NIST FIPS 180-4 SHA-256 hashes to establish proof of prior possession.
-• **Public Verification**: Real-time bitwise parity checks for candidate manuscripts at **/verify**.
-
-Choose a quick action below or rephrase your question and I'll explain!`,
+• **100% Ownership**: You retain full copyright and moral rights to all your writing.
+• **Cryptographic Proof**: How SHA-256 binary hashing proves prior possession.
+• **Public Verification**: Checking candidate files at **/verify**.`,
     actions: [
       { label: 'Register a Work', path: '/register-work', icon: 'FileCheck2' },
       { label: 'Public Verification', path: '/verify', icon: 'ShieldCheck' },
@@ -561,10 +738,10 @@ const SageChatbot = () => {
     {
       id: 'init-1',
       sender: 'sage',
-      title: 'Welcome to PubSeal',
-      text: `Hello! I am **Sage**, your dedicated PubSeal literary assistant. 
+      title: null,
+      text: `Hello! I am **Sage**, your dedicated PubSeal literary assistant. ✦
 
-Whether you're wondering what you need to create an account, how cryptographic timestamps protect your manuscript, or how verification works, I am here to provide direct and meaningful answers.`,
+Whether you're wondering what you need to create an account, how cryptographic timestamps protect your manuscript, or how verification works, I am here to provide direct and helpful answers. How can I help you today?`,
       actions: [
         { label: 'Do I Need Documents to Sign Up?', path: '__query:do i need documents to create an account', icon: 'HelpCircle' },
         { label: 'How to Register Work', path: '/register-work', icon: 'FileCheck2' },
@@ -628,7 +805,7 @@ Whether you're wondering what you need to create an account, how cryptographic t
     setInputValue('');
     setIsTyping(true);
 
-    // Natural assistant response delay (300ms)
+    // Natural human conversational response delay (280ms)
     setTimeout(() => {
       const match = findBestIntent(text, user, location.pathname);
       const sageMessage = {
@@ -641,11 +818,10 @@ Whether you're wondering what you need to create an account, how cryptographic t
       };
       setMessages((prev) => [...prev, sageMessage]);
       setIsTyping(false);
-    }, 320);
+    }, 280);
   };
 
   const handleActionClick = (path) => {
-    // If the action is a simulated query
     if (path.startsWith('__query:')) {
       const q = path.replace('__query:', '');
       handleSendMessage(q);
@@ -673,8 +849,8 @@ Whether you're wondering what you need to create an account, how cryptographic t
       {
         id: `init-${Date.now()}`,
         sender: 'sage',
-        title: 'Conversation Restarted',
-        text: `Conversation refreshed. How may I assist you with your questions or doubts today, ${user ? user.fullName : 'Author'}?`,
+        title: null,
+        text: `Conversation refreshed! How may I assist you today, ${user ? user.fullName : 'Author'}?`,
         actions: [
           { label: 'Do I Need Documents to Sign Up?', path: '__query:do i need documents to create an account', icon: 'HelpCircle' },
           { label: 'Register a Work', path: '/register-work', icon: 'FileCheck2' },
@@ -791,7 +967,7 @@ Whether you're wondering what you need to create an account, how cryptographic t
                       : 'bg-mocha-900/90 border border-mocha-700/70 text-mocha-200 rounded-bl-none shadow-mocha-deep'
                   }`}
                 >
-                  {/* Title if present */}
+                  {/* Title if present (for technical/legal knowledge items) */}
                   {msg.title && (
                     <div className="font-serif font-bold text-gold-300 text-xs pb-1 mb-1.5 border-b border-mocha-800/80 flex items-center space-x-1.5">
                       <Sparkles className="w-3.5 h-3.5 text-gold-400 shrink-0" />
@@ -829,7 +1005,7 @@ Whether you're wondering what you need to create an account, how cryptographic t
               <div className="flex items-center space-x-2 text-mocha-400 p-2 rounded-xl bg-mocha-900/50 w-fit animate-pulse">
                 <Sparkles className="w-3.5 h-3.5 text-gold-400" />
                 <span className="text-[11px] font-mono text-gold-300/80">
-                  Sage is formulating an answer...
+                  Sage is typing...
                 </span>
               </div>
             )}
