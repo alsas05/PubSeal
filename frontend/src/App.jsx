@@ -17,6 +17,7 @@ import ProfilePage from './pages/ProfilePage';
 import TermsPage from './pages/TermsPage';
 import NotFoundPage from './pages/NotFoundPage';
 import EmailVerificationBanner from './components/EmailVerificationBanner';
+import SageChatbot from './components/SageChatbot';
 
 // Scroll to top or scroll to anchor section on navigation
 const ScrollToTop = () => {
@@ -107,6 +108,8 @@ function App() {
             </Routes>
           </main>
           <Footer />
+          {/* Sage - Intelligent AI Navigator & Doubts Popup */}
+          <SageChatbot />
         </div>
       </AuthProvider>
     </BrowserRouter>
