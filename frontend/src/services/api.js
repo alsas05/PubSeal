@@ -25,7 +25,7 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Interceptor: handle 401 unauthenticated responses gracefully
+// Interceptor: handle 401 unauthenticated and 405/404 missing backend responses gracefully
 api.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -35,6 +35,12 @@ api.interceptors.response.use(
         localStorage.removeItem('pubseal_token');
         localStorage.removeItem('pubseal_user');
         window.dispatchEvent(new Event('pubseal:auth-expired'));
+      }
+    } else if (error.response && (error.response.status === 405 || error.response.status === 404)) {
+      // When Vercel serves index.html for API routes because no backend is mapped
+      if (typeof error.response.data === 'string' && error.response.data.includes('<!DOCTYPE html')) {
+        error.message =
+          'Backend API is not connected yet. Please configure the VITE_API_URL environment variable in your Vercel project settings pointing to your live backend server.';
       }
     }
     return Promise.reject(error);
