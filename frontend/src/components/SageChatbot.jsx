@@ -26,6 +26,15 @@ import {
 } from 'lucide-react';
 
 /**
+ * Helper to safely retrieve the author's display name
+ * Handles user.name, user.fullName, user.displayName, or email fallback
+ */
+const getAuthorDisplayName = (user) => {
+  if (!user) return 'Author';
+  return user.name || user.fullName || user.displayName || user.email?.split('@')[0] || 'Author';
+};
+
+/**
  * Human Social & Conversational Intents
  * Handles gratitude, small talk, check-ins, acknowledgments, and natural human dialogues
  */
@@ -37,11 +46,12 @@ const HUMAN_CONVERSATIONAL_INTENTS = [
       /(thank\s*(you|u)|thanks|thx|ty|appreciate\s*(it|you|your\s*help)|grateful|many\s*thanks)/i
     ],
     getReply: (user) => {
-      const authorName = user?.fullName ? `, ${user.fullName}` : '';
+      const name = getAuthorDisplayName(user);
+      const suffix = name !== 'Author' ? `, ${name}` : '';
       const replies = [
-        `You're very welcome${authorName}! 😊 Always a pleasure to help. If any other doubts pop up while writing or registering your work, I'm right here. Wishing you joyful writing! ✦`,
-        `You are most welcome${authorName}! ✦ Protecting your creative writing is what I'm here for. Let me know whenever you need anything else!`,
-        `Anytime at all! It's an honor to assist authors and creators. May your words flow effortlessly today! ✨`
+        `You're very welcome${suffix}! 😊 Always a pleasure to help. If any other doubts pop up while writing or registering your work, I'm right here. Wishing you joyful writing! ✦`,
+        `You are most welcome${suffix}! ✦ Protecting your creative writing is what I'm here for. Let me know whenever you need anything else!`,
+        `Anytime at all${suffix}! It's an honor to assist authors and creators. May your words flow effortlessly today! ✨`
       ];
       return replies[Math.floor(Math.random() * replies.length)];
     }
@@ -70,10 +80,11 @@ const HUMAN_CONVERSATIONAL_INTENTS = [
       /(how\s*are\s*you|how\s*are\s*you\s*doing|how'?s\s*it\s*going|how\s*do\s*you\s*do|what'?s\s*up|sup)[\s!?.]*$/i
     ],
     getReply: (user) => {
-      const authorName = user?.fullName ? `, ${user.fullName}` : '';
+      const name = getAuthorDisplayName(user);
+      const suffix = name !== 'Author' ? `, ${name}` : '';
       const replies = [
-        `I'm doing splendidly, thank you for asking! ☕ Just keeping an eye on our authors' vaults and certificates. How is your writing or creative journey coming along today${authorName}?`,
-        `I'm feeling wonderful and inspired! Ready and eager to help. How are you doing today${authorName}? Working on any new stories or research? ✨`
+        `I'm doing splendidly, thank you for asking! ☕ Just keeping an eye on our authors' vaults and certificates. How is your writing or creative journey coming along today${suffix}?`,
+        `I'm feeling wonderful and inspired! Ready and eager to help. How are you doing today${suffix}? Working on any new stories or research? ✨`
       ];
       return replies[Math.floor(Math.random() * replies.length)];
     }
@@ -670,7 +681,8 @@ function findBestIntent(query, user, currentPath) {
       if (pattern.test(trimmed) || pattern.test(cleaned)) {
         let text = intent.answer;
         if (intent.id === 'greeting' && user) {
-          text = `Greetings, **${user.fullName || 'Author'}**! I am **Sage**, your PubSeal literary navigator.\n\nI can help you manage your registered works, verify documents, or answer questions regarding your digital ownership certificates.\n\nWhat would you like to explore today?`;
+          const authorName = getAuthorDisplayName(user);
+          text = `Greetings, **${authorName}**! I am **Sage**, your PubSeal literary navigator. ✦\n\nI can help you manage your registered works, verify documents, or answer questions regarding your digital ownership certificates.\n\nWhat would you like to explore today?`;
         }
         return {
           title: intent.title,
@@ -733,23 +745,28 @@ const SageChatbot = () => {
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef(null);
 
-  // Initial welcome message
-  const [messages, setMessages] = useState([
-    {
-      id: 'init-1',
-      sender: 'sage',
-      title: null,
-      text: `Hello! I am **Sage**, your dedicated PubSeal literary assistant. ✦
+  // Initial welcome message (personalized when signed in)
+  const [messages, setMessages] = useState(() => {
+    const authorName = getAuthorDisplayName(user);
+    const welcomeText = authorName !== 'Author'
+      ? `Hello, **${authorName}**! I am **Sage**, your dedicated PubSeal literary assistant. ✦\n\nI'm here to help you manage your registered works, clarify copyright doubts, and navigate your author vault. How can I assist you today?`
+      : `Hello! I am **Sage**, your dedicated PubSeal literary assistant. ✦\n\nWhether you're wondering what you need to create an account, how cryptographic timestamps protect your manuscript, or how verification works, I am here to provide direct and helpful answers. How can I help you today?`;
 
-Whether you're wondering what you need to create an account, how cryptographic timestamps protect your manuscript, or how verification works, I am here to provide direct and helpful answers. How can I help you today?`,
-      actions: [
-        { label: 'Do I Need Documents to Sign Up?', path: '__query:do i need documents to create an account', icon: 'HelpCircle' },
-        { label: 'How to Register Work', path: '/register-work', icon: 'FileCheck2' },
-        { label: 'Is this Official Copyright?', path: '/terms#statutory-disclaimer', icon: 'Scale' }
-      ],
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    }
-  ]);
+    return [
+      {
+        id: 'init-1',
+        sender: 'sage',
+        title: null,
+        text: welcomeText,
+        actions: [
+          { label: 'Do I Need Documents to Sign Up?', path: '__query:do i need documents to create an account', icon: 'HelpCircle' },
+          { label: 'How to Register Work', path: '/register-work', icon: 'FileCheck2' },
+          { label: 'Is this Official Copyright?', path: '/terms#statutory-disclaimer', icon: 'Scale' }
+        ],
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      }
+    ];
+  });
 
   // Quick suggestion chips
   const quickChips = [
@@ -845,12 +862,17 @@ Whether you're wondering what you need to create an account, how cryptographic t
   };
 
   const handleResetChat = () => {
+    const authorName = getAuthorDisplayName(user);
+    const refreshedText = authorName !== 'Author'
+      ? `Conversation refreshed! How may I assist you today, **${authorName}**?`
+      : `Conversation refreshed! How may I assist you today, Author?`;
+
     setMessages([
       {
         id: `init-${Date.now()}`,
         sender: 'sage',
         title: null,
-        text: `Conversation refreshed! How may I assist you today, ${user ? user.fullName : 'Author'}?`,
+        text: refreshedText,
         actions: [
           { label: 'Do I Need Documents to Sign Up?', path: '__query:do i need documents to create an account', icon: 'HelpCircle' },
           { label: 'Register a Work', path: '/register-work', icon: 'FileCheck2' },
