@@ -20,156 +20,329 @@ import {
   CheckCircle2,
   Scale,
   User,
-  LogIn
+  LogIn,
+  AlertCircle
 } from 'lucide-react';
 
-// Specialized Knowledge Base & Intent Matching for Sage
-const SAGE_KNOWLEDGE_BASE = [
+/**
+ * Intelligent Intent Definitions for Sage
+ * Covers all author doubts, legal questions, account requirements, and navigation
+ */
+const SAGE_INTENTS = [
+  // 1. ACCOUNT CREATION & DOCUMENT REQUIREMENTS
   {
-    id: 'register_work',
-    triggers: [
-      'register',
-      'upload',
-      'submit',
-      'new work',
-      'register work',
-      'add book',
-      'protect novel',
-      'manuscript upload',
-      'how to register'
+    id: 'account_documents_required',
+    patterns: [
+      /(create|open|sign\s*up|make|register|join).*account.*(document|id|proof|require|need|paper)/i,
+      /(do\s*i\s*need|require|necessary).*(document|id|proof|paper|file).*account/i,
+      /account.*(document|id|proof|papers|kyc|passport|license)/i,
+      /(need|require).*(document|id|proof).*(create|open|make|register|sign\s*up)/i,
+      /(sign\s*up|register|create\s*account).*what\s*(do\s*i\s*need|is\s*required|do\s*you\s*need)/i,
+      /documents?.*(to\s*create|for\s*account|to\s*sign\s*up|to\s*register)/i,
+      /what\s*documents?.*(need|required|necessary)/i
     ],
-    title: 'Registering an Unpublished Work',
-    response: `To register your work with PubSeal:
+    title: 'Account Creation Requirements',
+    answer: `**No, you do not need any documents to create an account on PubSeal!**
 
-1. **Navigate to Register Work**: Click the button below or select 'Register Work' from the menu.
-2. **Upload Your File**: Drag & drop your PDF, DOCX, or TXT file (up to 50MB).
-3. **Add Details**: Enter your title, category (Novel, Poetry, Screenplay, etc.), and optional description.
-4. **Instant SHA-256 Hashing**: Our server computes the raw binary fingerprint and certified timestamp.
-5. **Receive Certificate**: Download your archival PDF Certificate with embedded QR code immediately!`,
+Creating an author account is simple, free, and requires zero paperwork:
+
+• **What you need**:
+  1. **Your Name**: Your preferred author or pen name.
+  2. **An Email Address**: Where we send a 6-digit verification code (OTP).
+  3. **A Password**: To secure your author login.
+  *(Or sign up instantly with 1 click using Google or Facebook!)*
+
+• **No Identity Proof**: We never ask for government IDs, passports, tax forms, or personal papers.
+• **When are documents used?**: You only upload a document (like a PDF, DOCX, or TXT file) when you are ready to **register an unpublished manuscript** in your private vault to generate its cryptographic proof.`,
     actions: [
-      { label: 'Register a Work Now', path: '/register-work', icon: 'FileCheck2' },
-      { label: 'View How It Works', path: '/#how-it-works', icon: 'BookOpen' }
+      { label: 'Create Free Account Now', path: '/register', icon: 'User' },
+      { label: 'How Registration Works', path: '/#how-it-works', icon: 'BookOpen' }
     ]
   },
+
+  // 2. PEN NAMES & AUTHOR ALIASES
   {
-    id: 'official_copyright',
-    triggers: [
-      'copyright',
-      'official copyright',
-      'us copyright office',
-      'usco',
-      'government',
-      'legal copyright',
-      'is this legal',
-      'court',
-      'lawsuit',
-      'statutory',
-      'monopoly',
-      'substitute'
+    id: 'pen_names',
+    patterns: [
+      /(pen\s*name|pseudonym|alias|fake\s*name|stage\s*name)/i,
+      /(can\s*i\s*use|allowed).*(pen\s*name|pseudonym)/i,
+      /(real\s*name|legal\s*name).*(required|mandatory|must\s*i\s*use)/i
+    ],
+    title: 'Pen Names & Author Attribution',
+    answer: `**Yes, you can register under any pen name or pseudonym you prefer!**
+
+• **Your Choice**: When signing up or registering a manuscript, you can use your pen name, collaborative collective name, or legal name.
+• **On Certificates**: The archival PDF Certificate and public verification badge will display whichever author name you specify.
+• **Editing Later**: You can update your author attribution at any time from your **Author Profile**.`,
+    actions: [
+      { label: 'Create Account', path: '/register', icon: 'User' },
+      { label: 'Go to Profile', path: '/profile', icon: 'User' }
+    ]
+  },
+
+  // 3. PRICING & COST
+  {
+    id: 'pricing_cost',
+    patterns: [
+      /(how\s*much|cost|price|pricing|charge|fee|fees|pay|payment|subscription|is\s*it\s*free)/i,
+      /(do\s*i\s*have\s*to\s*pay|is\s*pubseal\s*free)/i
+    ],
+    title: 'Pricing & Account Cost',
+    answer: `**Creating an account and exploring PubSeal is completely free!**
+
+• **Author Account**: Free setup with authentic email OTP verification.
+• **Cryptographic Hashing**: Instant NIST FIPS 180-4 SHA-256 fingerprinting.
+• **Archival PDF Certificates**: Downloadable certificates with embedded verification QR codes.
+• **Public Verification Portal**: Free, unlimited real-time verification for literary agents, publishers, and readers.`,
+    actions: [
+      { label: 'Sign Up for Free', path: '/register', icon: 'User' },
+      { label: 'Explore Features', path: '/#features', icon: 'Sparkles' }
+    ]
+  },
+
+  // 4. CAN SOMEONE STEAL MY WORK FROM THE HASH?
+  {
+    id: 'can_someone_steal_hash',
+    patterns: [
+      /(steal|reverse|reconstruct|extract|copy|read).*hash/i,
+      /(can\s*someone|can\s*anyone|what\s*if\s*someone).*(steal|copy|take).*(work|book|manuscript|novel|story)/i,
+      /(is\s*it\s*safe\s*to\s*share|safe\s*to\s*show).*(certificate|hash|token)/i
+    ],
+    title: 'Security & Hash Immutability',
+    answer: `**No. It is mathematically impossible for anyone to reconstruct, read, or steal your manuscript from its SHA-256 hash.**
+
+• **One-Way Function**: SHA-256 is strictly irreversible. You can calculate the hash from the file, but you *cannot* calculate the file from the hash.
+• **Zero Text Leakage**: The hash reveals no words, characters, plots, or ideas.
+• **Safe to Share**: You can proudly include your Certificate, Registration ID, and QR code in query letters to literary agents or publishers. It proves prior possession without exposing your text.`,
+    actions: [
+      { label: 'How Cryptographic Proof Works', path: '/#how-it-works', icon: 'Binary' },
+      { label: 'Test Verification Engine', path: '/verify', icon: 'ShieldCheck' }
+    ]
+  },
+
+  // 5. CAN PUBSEAL OR STAFF READ MY MANUSCRIPT?
+  {
+    id: 'can_pubseal_read_manuscript',
+    patterns: [
+      /(can|does)\s*(pubseal|you|staff|anyone|employees?|team)\s*(read|see|view|access|open).*(book|manuscript|file|story|draft)/i,
+      /(is\s*my\s*book|is\s*my\s*file|is\s*my\s*manuscript)\s*(private|confidential|secret)/i,
+      /who\s*can\s*(see|read|view|access)\s*(my\s*manuscript|my\s*file|my\s*book)/i
+    ],
+    title: 'Manuscript Privacy & Confidential Vault',
+    answer: `**No. PubSeal does not publish, read, or share your private manuscripts.**
+
+• **Author-Private Vault**: Uploaded manuscripts are stored in an isolated, private vault accessible only when you are logged into your account.
+• **Automated Machine Hashing**: Our server only reads raw binary bytes in memory for milliseconds to calculate the SHA-256 fingerprint.
+• **Zero Public Exposure**: The public verification portal only displays safe evidentiary facts (Title, Author Name, Timestamp, and SHA-256 Hash). The manuscript contents remain 100% private.`,
+    actions: [
+      { label: 'Author Ownership Guarantee', path: '/terms#author-ownership', icon: 'ShieldCheck' },
+      { label: 'Vault Privacy Policy', path: '/terms#vault-confidentiality', icon: 'Lock' }
+    ]
+  },
+
+  // 6. AI TRAINING & LLM SCRAPING
+  {
+    id: 'ai_training_policy',
+    patterns: [
+      /(train|scrape|feed|use).*(ai|llm|model|chatgpt|gpt|gemini).*(manuscript|book|writing|work)/i,
+      /(is\s*my\s*work|are\s*my\s*books|is\s*my\s*writing)\s*used\s*(to\s*train|for\s*ai|for\s*training)/i
+    ],
+    title: 'Zero AI Training Covenant',
+    answer: `**Never. PubSeal has a strict zero-AI training policy.**
+
+• We **never** sell, license, scrape, or feed your manuscripts, drafts, or creative ideas into artificial intelligence or large language models.
+• Your manuscripts remain your exclusive intellectual property, shielded in your private vault.`,
+    actions: [
+      { label: 'Read Vault Covenants', path: '/terms#vault-confidentiality', icon: 'Lock' }
+    ]
+  },
+
+  // 7. WHO OWNS MY WORK?
+  {
+    id: 'who_owns_my_work',
+    patterns: [
+      /(who\s*owns|who\s*has\s*rights|do\s*you\s*own|do\s*i\s*keep|retain).*(rights?|copyright|ownership|ip)/i,
+      /(give\s*up|transfer|assign).*(rights?|copyright|ownership)/i
+    ],
+    title: '100% Author Ownership Guarantee',
+    answer: `**You retain 100% of your rights. PubSeal claims 0% ownership.**
+
+• **You Own Everything**: All copyright, moral rights, trademark, publishing rights, and commercial royalties remain exclusively yours.
+• **No Publishing Rights**: We do not publish, sell, or license your writing.
+• **Machine-Only Permission**: You grant us only the automated permission necessary to calculate your SHA-256 hash and store your private backup.`,
+    actions: [
+      { label: 'Review Terms of Ownership', path: '/terms#author-ownership', icon: 'ShieldCheck' }
+    ]
+  },
+
+  // 8. IS THIS OFFICIAL GOVERNMENT COPYRIGHT?
+  {
+    id: 'official_government_copyright',
+    patterns: [
+      /(is\s*this|does\s*this\s*replace|is\s*it).*(official|government|real|legal|usco|united\s*states).*(copyright|office|registration)/i,
+      /(replace|substitute).*(copyright\s*office|government\s*filing|statutory)/i,
+      /difference\s*between\s*pubseal\s*and\s*(copyright|government)/i
     ],
     title: 'PubSeal vs. Government Copyright Offices',
-    response: `**Is PubSeal an official government copyright office?**
+    answer: `**No. PubSeal is an independent technological evidentiary registry, NOT a government agency.**
 
-**No.** PubSeal is an independent technological evidentiary registry, not a government agency. 
-
-• **What PubSeal Provides**: Immutable cryptographic proof (NIST FIPS 180-4 SHA-256 hash & server timestamp) establishing that you possessed this exact binary file at a certified date and time.
-• **Evidentiary Value**: This serves as tamper-evident digital evidence in priority disputes, pitch meetings, and copyright claims.
-• **Statutory Copyright**: If you require statutory damages or federal litigation standing (such as under 17 U.S.C. § 412 in the US), you should file with official bodies like the US Copyright Office alongside your PubSeal record.`,
+• **What PubSeal Provides**: Tamper-evident cryptographic proof of **prior possession** and **document integrity** (NIST FIPS 180-4 SHA-256 hash & certified server timestamp).
+• **Evidentiary Value**: This provides robust third-party digital evidence in priority disputes, pitch meetings, and copyright claims.
+• **Statutory Copyright**: In countries like the US, statutory damages under 17 U.S.C. § 412 require filing with the official national office (USCO). We recommend using PubSeal during drafting and pitching, alongside government filings for commercial releases.`,
     actions: [
       { label: 'Read Statutory Disclaimer', path: '/terms#statutory-disclaimer', icon: 'Scale' },
       { label: 'Explore Terms & Conditions', path: '/terms', icon: 'BookOpen' }
     ]
   },
-  {
-    id: 'ownership_privacy',
-    triggers: [
-      'ownership',
-      'who owns',
-      'my rights',
-      'do you own',
-      'intellectual property',
-      'ip rights',
-      'can you read',
-      'vault',
-      'private',
-      'confidential',
-      'ai training',
-      'llm'
-    ],
-    title: '100% Author Ownership & Vault Privacy',
-    response: `**You retain 100% of your rights.** 
 
-• **Zero IP Claims**: PubSeal acquires zero copyright, publishing rights, or commercial royalties. You are the sole owner.
-• **Confidential Author Vault**: Your manuscript is stored securely in your private vault. It is **never** made public, indexed by search engines, or sold.
-• **Zero AI Training**: We never use manuscripts or creative drafts to train AI or large language models.
-• **Public Boundary**: Only non-sensitive evidentiary metadata (Title, Author, Timestamp, and SHA-256 Hash) appears on the public verification portal.`,
+  // 9. IS THIS VALID IN COURT OR DISPUTES?
+  {
+    id: 'valid_in_court',
+    patterns: [
+      /(valid|admissible|hold\s*up|recognized|accepted|used).*in\s*(court|lawsuit|arbitration|legal\s*battle|dispute)/i,
+      /(legal\s*proof|evidence\s*in\s*court|can\s*i\s*sue)/i,
+      /(priority\s*dispute|someone\s*copies\s*me)/i
+    ],
+    title: 'Evidentiary Admissibility in Disputes',
+    answer: `**Yes, cryptographic timestamped records serve as robust third-party digital evidence in legal and priority disputes.**
+
+• **Proof of Prior Existence**: The certified ISO server timestamp and SHA-256 binary digest prove that an exact file existed in your possession on or before that date.
+• **Objective Mathematics**: Unlike a self-mailed envelope ("poor man's copyright"), a cryptographic hash is verified by standard computer science mathematics (NIST FIPS 180-4).
+• **Independent Verification**: Any attorney, judge, or arbitrator can independently verify the authenticity of your certificate at **/verify**.`,
     actions: [
-      { label: 'Author Ownership Guarantee', path: '/terms#author-ownership', icon: 'ShieldCheck' },
-      { label: 'Vault Security Policy', path: '/terms#vault-confidentiality', icon: 'Lock' }
+      { label: 'Public Verification Portal', path: '/verify', icon: 'ShieldCheck' },
+      { label: 'Evidentiary Framework', path: '/terms#evidentiary-nature', icon: 'Scale' }
     ]
   },
-  {
-    id: 'verify_documents',
-    triggers: [
-      'verify',
-      'verification',
-      'check',
-      'validate',
-      'certificate verify',
-      'qr code',
-      'lookup',
-      'how to verify',
-      'authenticity',
-      'tamper'
-    ],
-    title: 'Verifying Documents & Certificates',
-    response: `PubSeal offers real-time, zero-knowledge verification at **/verify**:
 
-• **Method A (Candidate File)**: Drop an author's manuscript to recalculate its SHA-256 binary hash. If a single byte was altered, it reports NO MATCH. If identical, it confirms an EXACT CRYPTOGRAPHIC MATCH.
-• **Method B (Registration ID)**: Enter any serial token (e.g. \`PUB-2026-XXXX\`) or paste a SHA-256 hash to view the public registry entry and download verification details.
-• **QR Codes**: Every generated PDF certificate contains a scannable QR code linking straight to its public verification record.`,
+  // 10. UNFINISHED DRAFTS / WORK IN PROGRESS
+  {
+    id: 'unfinished_drafts',
+    patterns: [
+      /(unfinished|draft|in\s*progress|wip|incomplete|sample|chapter|outline|partial)/i,
+      /(can\s*i\s*register|can\s*i\s*upload).*(draft|chapter|outline|sample|unfinished)/i
+    ],
+    title: 'Registering Unfinished Drafts & Samples',
+    answer: `**Yes! You can register your work at any stage of creation.**
+
+• Whether you have a rough outline, an opening chapter, a partial draft, or a finished novel, you can timestamp it immediately.
+• When you write more chapters or polish your manuscript, you can use our **Version Control** feature to upload Version 2 or Version 3 while preserving the proof of your earlier draft!`,
     actions: [
-      { label: 'Open Public Verification', path: '/verify', icon: 'ShieldCheck' }
+      { label: 'Register a Draft Now', path: '/register-work', icon: 'FileCheck2' },
+      { label: 'Go to Dashboard', path: '/dashboard', icon: 'Compass' }
     ]
   },
-  {
-    id: 'version_control',
-    triggers: [
-      'version',
-      'new version',
-      'revision',
-      'draft',
-      'edit work',
-      'update file',
-      'v2',
-      'second draft',
-      'revise'
-    ],
-    title: 'Document Version Control (V1, V2, V3)',
-    response: `Yes! PubSeal supports **immutable multi-draft version control**:
 
-1. Go to your **Author Dashboard** and open your work details.
+  // 11. EDITING / UPDATING AFTER REGISTRATION
+  {
+    id: 'editing_and_revisions',
+    patterns: [
+      /(edit|change|update|revise|new\s*draft|version|second\s*draft).*(after|already|later|registered|work)/i,
+      /(can\s*i\s*change|how\s*to\s*update).*(manuscript|book|file|version)/i
+    ],
+    title: 'Editing Works & Version Control (v1, v2, v3)',
+    answer: `**Yes! PubSeal supports Multi-Draft Version Control:**
+
+1. Open your work from the **Author Dashboard**.
 2. Click **'Upload New Version'**.
-3. Submit your revised draft (e.g. second revision or final proof).
-4. PubSeal increments the version number, computes a unique SHA-256 hash for the revision, and issues an updated certificate while preserving all previous draft hashes in your permanent audit trail.`,
+3. Select your updated draft (PDF, DOCX, or TXT).
+4. PubSeal increments the version number (e.g. Version 2), computes a new SHA-256 hash for the revision, and issues an updated certificate while keeping all previous versions safely recorded.`,
     actions: [
       { label: 'Go to Author Dashboard', path: '/dashboard', icon: 'Compass' }
     ]
   },
+
+  // 12. SUPPORTED FORMATS & SIZES
+  {
+    id: 'supported_formats',
+    patterns: [
+      /(what|which)\s*(formats?|files?|extensions?).*(support|upload|accept)/i,
+      /(can\s*i\s*upload|accept).*(pdf|docx|word|txt|epub|mobi)/i,
+      /(file\s*size|size\s*limit|how\s*big|max\s*size|mb)/i
+    ],
+    title: 'Supported Formats & Size Limits',
+    answer: `PubSeal accepts the standard publishing industry file formats:
+
+• **PDF** (\`.pdf\`) — Typeset manuscripts, galley proofs, papers
+• **DOCX** (\`.docx\`) — Microsoft Word drafts and editor revisions
+• **TXT** (\`.txt\`) — Plaintext, poetry, and screenplays
+• **Maximum File Size**: Up to **50 MB** per manuscript file.
+
+*(Executable files like .exe or .bat are blocked for security).*`,
+    actions: [
+      { label: 'Register Manuscript', path: '/register-work', icon: 'FileCheck2' }
+    ]
+  },
+
+  // 13. HOW TO REGISTER A WORK
+  {
+    id: 'how_to_register',
+    patterns: [
+      /(how\s*(do\s*i|to)|steps?\s*to)\s*(register|upload|submit|protect).*(work|book|manuscript|novel|story|poem)/i,
+      /register\s*(a\s*)?(work|manuscript|book|novel)/i
+    ],
+    title: 'How to Register a Manuscript',
+    answer: `To register an unpublished work on PubSeal:
+
+1. **Click 'Register Work'** in the navigation bar.
+2. **Upload Your File**: Drag & drop your PDF, DOCX, or TXT file (up to 50MB).
+3. **Add Details**: Enter your title, category (Novel, Poetry, Screenplay, etc.), and optional summary.
+4. **Instant SHA-256 Hashing**: Our server computes the raw binary fingerprint and certified timestamp.
+5. **Receive Certificate**: Download your high-resolution archival PDF Certificate with embedded QR code immediately!`,
+    actions: [
+      { label: 'Register a Work Now', path: '/register-work', icon: 'FileCheck2' },
+      { label: 'View How It Works', path: '/#how-it-works', icon: 'BookOpen' }
+    ]
+  },
+
+  // 14. HOW VERIFICATION WORKS
+  {
+    id: 'how_to_verify',
+    patterns: [
+      /(how\s*(do\s*i|to)|steps?\s*to)\s*(verify|check|validate).*(work|file|certificate|hash|token)/i,
+      /(how\s*does\s*verification\s*work|verify\s*a\s*document|check\s*authenticity)/i
+    ],
+    title: 'How Public Verification Works',
+    answer: `Anyone (publishers, agents, attorneys, or readers) can verify a work at **/verify**:
+
+• **Method A — File Drop**: Drop the manuscript file to calculate its raw SHA-256 hash on our server. If identical to a registered work, it confirms an **EXACT CRYPTOGRAPHIC MATCH**.
+• **Method B — Registration ID / Hash**: Enter the token (e.g. \`PUB-2026-XXXX\`) or paste the SHA-256 hash to view public verification details and download the certified record.
+• **QR Code**: Scan the QR code on any PubSeal PDF Certificate with a smartphone camera to open the public verification ledger directly.`,
+    actions: [
+      { label: 'Open Public Verification', path: '/verify', icon: 'ShieldCheck' }
+    ]
+  },
+
+  // 15. EMAIL OTP / SIGN-IN HELP
+  {
+    id: 'otp_verification_help',
+    patterns: [
+      /(didn'?t\s*get|not\s*receiv|missing|where\s*is|resend).*(otp|code|pin|email\s*code)/i,
+      /(otp|verification\s*code|pin)\s*(problem|issue|help|not\s*working)/i,
+      /(how\s*does|how\s*to).*(email\s*verification|social\s*login|google\s*login)/i
+    ],
+    title: 'Email Verification & OTP Assistance',
+    answer: `If you haven't received your 6-digit email OTP:
+
+1. **Check Spam / Junk Folder**: Sometimes automated emails land in Spam.
+2. **Click Resend PIN**: On the verification screen, click *"Resend Code"* to dispatch a fresh 6-digit PIN.
+3. **Verify Email Address**: Ensure your email was entered accurately without typos.
+4. **Social Sign-In**: Alternatively, you can log in instantly with **Google** or **Facebook** for automatic verification without waiting for an OTP!`,
+    actions: [
+      { label: 'Go to Email Verification', path: '/verify-email', icon: 'CheckCircle2' },
+      { label: 'Sign In / Social Login', path: '/login', icon: 'LogIn' }
+    ]
+  },
+
+  // 16. AI READINESS SCORE
   {
     id: 'ai_readiness_score',
-    triggers: [
-      'readiness',
-      'score',
-      'ai score',
-      'readiness score',
-      'hygiene',
-      'evaluation',
-      'dossier',
-      'statutory readiness'
+    patterns: [
+      /(what\s*is|explain|how\s*is).*(readiness|ai\s*score|readiness\s*score|score\s*calculated)/i,
+      /(improve\s*score|low\s*score|readiness\s*hygiene|filing\s*dossier)/i
     ],
     title: 'AI Copyright Readiness Score (0–100)',
-    response: `The **AI Copyright Readiness Score** evaluates your manuscript's preparation for official copyright filings and literary submissions across 5 statutory pillars:
+    answer: `The **AI Copyright Readiness Score** evaluates your manuscript's preparation across 5 statutory pillars:
 
 1. **Title & Front-Matter Clarity**
 2. **Authorship Attribution & Chain of Custody**
@@ -177,228 +350,197 @@ const SAGE_KNOWLEDGE_BASE = [
 4. **Format & Encoding Hygiene**
 5. **Statutory Filing Preparedness**
 
-You can also generate an exportable **Statutory Filing Dossier** directly from your work's details page.`,
+• **Advisory Only**: A lower score does NOT invalidate your copyright or PubSeal timestamp; it simply highlights recommended formatting improvements before publishing.
+• **Filing Dossier**: You can download a structured filing dossier from your work's details page.`,
     actions: [
-      { label: 'View Works in Dashboard', path: '/dashboard', icon: 'Compass' },
-      { label: 'Readiness Advisory Policy', path: '/terms#ai-score-disclaimer', icon: 'Scale' }
+      { label: 'Go to Dashboard', path: '/dashboard', icon: 'Compass' },
+      { label: 'Readiness Terms Policy', path: '/terms#ai-score-disclaimer', icon: 'Scale' }
     ]
   },
-  {
-    id: 'sha256_tech',
-    triggers: [
-      'sha',
-      'sha256',
-      'hash',
-      'fingerprint',
-      'algorithm',
-      'cryptographic',
-      'deterministic',
-      'fips',
-      'binary'
-    ],
-    title: 'The NIST FIPS 180-4 SHA-256 Standard',
-    response: `PubSeal relies on **SHA-256** (Secure Hash Algorithm 256-bit), standard recognized by the US National Institute of Standards and Technology (NIST):
 
-• **Mathematical Determinism**: Identical file bytes will *always* generate the exact same 64-character hexadecimal digest.
-• **Avalanche Effect**: Changing even a single comma or letter alters roughly 50% of the entire output hash.
-• **Collision Resistance**: Finding two distinct manuscripts with the same SHA-256 hash is mathematically improbable with existing compute power.`,
+  // 17. CAN I DELETE A REGISTERED WORK?
+  {
+    id: 'can_i_delete_work',
+    patterns: [
+      /(can\s*i\s*delete|how\s*to\s*delete|remove|erase|unpublish).*(work|manuscript|book|registration)/i
+    ],
+    title: 'Deleting or Managing Registered Works',
+    answer: `• To preserve the cryptographic integrity of our tamper-evident ledger, timestamped registration entries are immutable.
+• However, you have complete control over your private manuscript files in your **Author Vault**, and you can contact support at \`support@pubseal.com\` if you need assistance managing your registered records.`,
     actions: [
-      { label: 'Test File in Verification', path: '/verify', icon: 'Binary' }
+      { label: 'Author Dashboard', path: '/dashboard', icon: 'Compass' },
+      { label: 'Terms & Inquiries', path: '/terms#amendments-contact', icon: 'BookOpen' }
     ]
   },
+
+  // 18. DIRECT NAVIGATION: DASHBOARD
   {
-    id: 'file_formats',
-    triggers: [
-      'format',
-      'file type',
-      'extension',
-      'supported files',
-      'pdf',
-      'docx',
-      'word',
-      'txt',
-      'size limit',
-      'mb'
+    id: 'nav_dashboard',
+    patterns: [
+      /(go\s*to|open|take\s*me\s*to|where\s*is|show\s*me).*(dashboard|vault|my\s*works|my\s*books)/i,
+      /^(dashboard|my\s*works|vault)$/i
     ],
-    title: 'Supported Formats & Size Limits',
-    response: `PubSeal accepts the standard publishing industry file formats:
-
-• **PDF** (\`.pdf\`) — Typeset manuscripts, galley proofs, papers
-• **DOCX** (\`.docx\`) — Microsoft Word drafts and editors' revisions
-• **TXT** (\`.txt\`) — Plaintext, screenplays, and poetry
-• **Max Size**: Up to 50 MB per file
-
-*Executable files (\`.exe\`, \`.bat\`, etc.) are rejected for security reasons.*`,
-    actions: [
-      { label: 'Register a Manuscript', path: '/register-work', icon: 'FileCheck2' }
-    ]
-  },
-  {
-    id: 'email_verification_auth',
-    triggers: [
-      'email',
-      'otp',
-      'pin',
-      'code',
-      'verify email',
-      'login',
-      'sign in',
-      'social login',
-      'google',
-      'facebook',
-      'password',
-      'credentials'
-    ],
-    title: 'Authentication & Email Verification',
-    response: `PubSeal offers enterprise-grade security for author accounts:
-
-• **Email OTP**: Upon signup, a 6-digit verification code is dispatched to your authentic email address.
-• **Social Login**: Sign in instantly using your Google or Facebook account.
-• **Verification Status**: Verified authors receive a certified badge on their author profile and priority certificate downloads.`,
-    actions: [
-      { label: 'Verify Email', path: '/verify-email', icon: 'CheckCircle2' },
-      { label: 'Sign In / Switch Account', path: '/login', icon: 'LogIn' }
-    ]
-  },
-  {
-    id: 'navigation_dashboard',
-    triggers: [
-      'dashboard',
-      'my works',
-      'vault',
-      'where are my books',
-      'view works',
-      'my certificates',
-      'download certificate'
-    ],
-    title: 'Author Vault & Dashboard Navigation',
-    response: `Your **Author Dashboard** is your central creative command center! Here you can:
-
-• View all registered literary works, poetry, and research.
-• Download high-resolution vector PDF Certificates with golden seals.
-• Check AI Copyright Readiness scores and hygiene recommendations.
-• Register new revision versions (v1, v2, v3).
-• Retrieve your original manuscripts from your encrypted vault.`,
+    title: 'Author Vault & Dashboard',
+    answer: `Opening your **Author Dashboard**! Here you can view all registered works, download certificates, check readiness scores, and manage revision drafts.`,
     actions: [
       { label: 'Open Author Dashboard', path: '/dashboard', icon: 'Compass' }
     ]
   },
+
+  // 19. DIRECT NAVIGATION: REGISTER
   {
-    id: 'navigation_profile',
-    triggers: [
-      'profile',
-      'account',
-      'settings',
-      'change password',
-      'my account',
-      'author details'
+    id: 'nav_register',
+    patterns: [
+      /(go\s*to|open|take\s*me\s*to|where\s*is|show\s*me).*(register\s*work|upload\s*work|registration\s*page)/i,
+      /^(register|upload|register\s*work)$/i
+    ],
+    title: 'Register Work Page',
+    answer: `Here is the link to register your unpublished manuscript. Simply drop your PDF, DOCX, or TXT file to generate your SHA-256 fingerprint and certificate.`,
+    actions: [
+      { label: 'Go to Register Work', path: '/register-work', icon: 'FileCheck2' }
+    ]
+  },
+
+  // 20. DIRECT NAVIGATION: VERIFY
+  {
+    id: 'nav_verify',
+    patterns: [
+      /(go\s*to|open|take\s*me\s*to|where\s*is|show\s*me).*(verify|verification|verification\s*page)/i,
+      /^(verify|verification)$/i
+    ],
+    title: 'Public Integrity Verification',
+    answer: `Opening the **Public Integrity Verification** page, where candidate manuscripts or registration IDs can be verified against our cryptographic ledger.`,
+    actions: [
+      { label: 'Open Public Verification', path: '/verify', icon: 'ShieldCheck' }
+    ]
+  },
+
+  // 21. DIRECT NAVIGATION: PROFILE & SETTINGS
+  {
+    id: 'nav_profile',
+    patterns: [
+      /(go\s*to|open|take\s*me\s*to|where\s*is|show\s*me).*(profile|profile\s*page|account\s*settings|settings)/i,
+      /(change|update|reset).*(password|email\s*address|display\s*name)/i,
+      /^(profile|settings|my\s*profile)$/i
     ],
     title: 'Author Profile & Settings',
-    response: `Manage your author identity, account email, verification status, and security preferences in your **Author Profile**.`,
+    answer: `Opening your **Author Profile & Settings**, where you can update your author details, view your verification status, or change your password.`,
     actions: [
       { label: 'Go to Profile Page', path: '/profile', icon: 'User' }
     ]
   },
+
+  // 22. DIRECT NAVIGATION: TERMS & CONDITIONS
   {
-    id: 'navigation_terms',
-    triggers: [
-      'terms',
-      'conditions',
-      'terms of service',
-      'legal',
-      'privacy policy',
-      'tos',
-      'policy'
+    id: 'nav_terms',
+    patterns: [
+      /(go\s*to|open|take\s*me\s*to|where\s*is|show\s*me).*(terms|conditions|tos|terms\s*of\s*service|legal)/i,
+      /^(terms|conditions|tos|legal)$/i
     ],
     title: 'Terms of Service & Legal Framework',
-    response: `PubSeal's comprehensive **Terms & Conditions** outline our cryptographic evidence model, 100% author ownership covenants, vault privacy guarantees, and statutory non-government disclaimers.`,
+    answer: `Opening the official **Terms & Conditions**, including our 100% author ownership covenants, vault confidentiality, and statutory disclaimers.`,
     actions: [
-      { label: 'Open Terms & Conditions', path: '/terms', icon: 'BookOpen' }
+      { label: 'Read Terms & Conditions', path: '/terms', icon: 'BookOpen' }
     ]
   },
+
+  // 23. GREETINGS & CASUAL INQUIRIES
   {
     id: 'greeting',
-    triggers: [
-      'hello',
-      'hi',
-      'hey',
-      'greetings',
-      'good morning',
-      'good afternoon',
-      'who are you',
-      'what is sage',
-      'help',
-      'doubts'
+    patterns: [
+      /^(hello|hi|hey|greetings|good\s*morning|good\s*afternoon|good\s*evening)[\s!.]*$/i,
+      /who\s*are\s*you/i,
+      /what\s*(can\s*you\s*do|is\s*sage)/i,
+      /^(help|doubts|questions)[\s!.]*$/i
     ],
     title: 'Greetings from Sage',
-    response: `Greetings! I am **Sage**, your dedicated PubSeal literary navigator and guide.
+    answer: `Greetings! I am **Sage**, your dedicated PubSeal literary navigator and guide.
 
-I can help you:
-• Understand how cryptographic SHA-256 registration protects your work
-• Navigate between the Dashboard, Registration, Verification, and Profile
-• Clarify questions regarding copyright vs. evidentiary proof
-• Explain how to download certificates or register new revisions
+I can help answer any questions or doubts you have, including:
+• **Account Setup**: Do you need documents? *(No, none at all!)*
+• **Registration**: How to upload manuscripts & generate SHA-256 fingerprints
+• **Legal Standing**: Distinguishing cryptographic evidence from government copyright
+• **Author Rights**: You retain 100% ownership at all times
+• **Verification**: How to verify a certificate or candidate file in real time
 
 What questions or doubts may I clear for you today?`,
     actions: [
       { label: 'Register a Work', path: '/register-work', icon: 'FileCheck2' },
-      { label: 'Verify a Manuscript', path: '/verify', icon: 'ShieldCheck' },
+      { label: 'Public Verification', path: '/verify', icon: 'ShieldCheck' },
       { label: 'Read Terms of Service', path: '/terms', icon: 'Scale' }
     ]
   }
 ];
 
-// Helper to determine the best response
-function matchUserQuery(query, user, currentPath) {
-  const normalized = query.toLowerCase().trim();
+/**
+ * Intelligent Query Matcher
+ * Strips conversational fillers and tests high-priority regex patterns
+ */
+function findBestIntent(query, user, currentPath) {
+  const trimmed = query.trim();
 
-  // 1. Direct match on knowledge base triggers
-  let bestMatch = null;
-  let highestScore = 0;
+  // Strip conversational conversational prefixes (e.g. "no..", "like", "actually", "wait", "i mean", "what about")
+  const cleaned = trimmed
+    .replace(/^(no|yes|well|actually|wait|i mean|like|hey|so|uh|um)\s*([.,;!?]+\s*|\s+)/i, '')
+    .trim();
 
-  for (const item of SAGE_KNOWLEDGE_BASE) {
-    let score = 0;
-    for (const trigger of item.triggers) {
-      if (normalized === trigger) {
-        score += 10;
-      } else if (normalized.includes(trigger)) {
-        score += trigger.length;
+  // 1. Test every pattern against both raw query and cleaned query
+  for (const intent of SAGE_INTENTS) {
+    for (const pattern of intent.patterns) {
+      if (pattern.test(trimmed) || pattern.test(cleaned)) {
+        let text = intent.answer;
+        // Personalize greeting if user is authenticated
+        if (intent.id === 'greeting' && user) {
+          text = `Greetings, **${user.fullName || 'Author'}**! I am **Sage**, your PubSeal literary navigator.\n\nI can help you manage your registered works, verify documents, or answer questions regarding your digital ownership certificates.\n\nWhat would you like to explore today?`;
+        }
+        return {
+          title: intent.title,
+          text,
+          actions: intent.actions || []
+        };
       }
     }
-    if (score > highestScore) {
-      highestScore = score;
-      bestMatch = item;
-    }
   }
 
-  if (bestMatch && highestScore > 0) {
-    let personalizedResponse = bestMatch.response;
-    if (user && bestMatch.id === 'greeting') {
-      personalizedResponse = `Greetings, **${user.fullName || 'Author'}**! I am **Sage**, your PubSeal literary assistant.\n\nI can help you manage your registered works, verify documents, or answer questions regarding your digital ownership certificates.\n\nWhat would you like to explore?`;
-    }
-    return {
-      title: bestMatch.title,
-      text: personalizedResponse,
-      actions: bestMatch.actions || []
-    };
+  // 2. Multi-keyword heuristic fallback for unscripted queries
+  const lower = cleaned.toLowerCase();
+
+  if (lower.includes('document') && (lower.includes('create') || lower.includes('account') || lower.includes('sign') || lower.includes('need') || lower.includes('require'))) {
+    const matched = SAGE_INTENTS.find((i) => i.id === 'account_documents_required');
+    if (matched) return { title: matched.title, text: matched.answer, actions: matched.actions };
   }
 
-  // 2. Intelligent Contextual Fallback
+  if (lower.includes('copyright') || lower.includes('usco') || lower.includes('government') || lower.includes('legal')) {
+    const matched = SAGE_INTENTS.find((i) => i.id === 'official_government_copyright');
+    if (matched) return { title: matched.title, text: matched.answer, actions: matched.actions };
+  }
+
+  if (lower.includes('verify') || lower.includes('check') || lower.includes('qr')) {
+    const matched = SAGE_INTENTS.find((i) => i.id === 'how_to_verify');
+    if (matched) return { title: matched.title, text: matched.answer, actions: matched.actions };
+  }
+
+  if (lower.includes('register') || lower.includes('upload') || lower.includes('submit')) {
+    const matched = SAGE_INTENTS.find((i) => i.id === 'how_to_register');
+    if (matched) return { title: matched.title, text: matched.answer, actions: matched.actions };
+  }
+
+  // 3. Conversational Fallback
   return {
-    title: 'Assisting with Your Inquiry',
-    text: `I understand you have a question regarding: *"_${query}_"*. 
+    title: 'PubSeal Navigator Guidance',
+    text: `I want to give you an exact and meaningful answer regarding *"_${query}_"*. 
 
-As your PubSeal assistant, here are the most common areas I can guide you through:
-• **Registering Work**: Create immutable cryptographic proof of your manuscript before pitching or publishing.
-• **Public Verification**: Verify a certificate token or candidate file's SHA-256 match in real time.
-• **100% Author Ownership**: You retain full copyright and moral rights at all times.
-• **Legal Standing**: Distinguishing cryptographic evidence from government copyright registrations.
+Here are the most common topics authors ask about:
+• **Account Setup**: You do **not** need any documents or ID to create a free account.
+• **100% Ownership**: You retain full copyright, moral rights, and commercial ownership of your writing.
+• **Cryptographic Proof**: We calculate deterministic NIST FIPS 180-4 SHA-256 hashes to establish proof of prior possession.
+• **Public Verification**: Real-time bitwise parity checks for candidate manuscripts at **/verify**.
 
-Choose a quick shortcut below or feel free to rephrase your doubt!`,
+Choose a quick action below or rephrase your question and I'll explain!`,
     actions: [
-      { label: 'Register Work', path: '/register-work', icon: 'FileCheck2' },
-      { label: 'Verify Document', path: '/verify', icon: 'ShieldCheck' },
-      { label: 'View Terms & Rights', path: '/terms', icon: 'Scale' }
+      { label: 'Register a Work', path: '/register-work', icon: 'FileCheck2' },
+      { label: 'Public Verification', path: '/verify', icon: 'ShieldCheck' },
+      { label: 'Terms & Disclaimers', path: '/terms', icon: 'Scale' }
     ]
   };
 }
@@ -419,13 +561,14 @@ const SageChatbot = () => {
     {
       id: 'init-1',
       sender: 'sage',
-      text: `Hello! I am **Sage**, your PubSeal literary navigator. 
+      title: 'Welcome to PubSeal',
+      text: `Hello! I am **Sage**, your dedicated PubSeal literary assistant. 
 
-Whether you need help registering a manuscript, understanding SHA-256 timestamps, verifying a certificate, or navigating the platform, I am here to help.`,
+Whether you're wondering what you need to create an account, how cryptographic timestamps protect your manuscript, or how verification works, I am here to provide direct and meaningful answers.`,
       actions: [
+        { label: 'Do I Need Documents to Sign Up?', path: '__query:do i need documents to create an account', icon: 'HelpCircle' },
         { label: 'How to Register Work', path: '/register-work', icon: 'FileCheck2' },
-        { label: 'Is this Official Copyright?', path: '/terms#statutory-disclaimer', icon: 'Scale' },
-        { label: 'How Verification Works', path: '/verify', icon: 'ShieldCheck' }
+        { label: 'Is this Official Copyright?', path: '/terms#statutory-disclaimer', icon: 'Scale' }
       ],
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     }
@@ -433,16 +576,16 @@ Whether you need help registering a manuscript, understanding SHA-256 timestamps
 
   // Quick suggestion chips
   const quickChips = [
-    { label: '📝 How to register', query: 'How do I register a new manuscript?' },
-    { label: '⚖️ Is this copyright?', query: 'Does PubSeal replace official government copyright?' },
-    { label: '🔒 Who owns my work?', query: 'Who owns the copyright of uploaded manuscripts?' },
+    { label: '📄 Do I need documents to sign up?', query: 'Do I need any documents to create an account?' },
+    { label: '⚖️ Is this official copyright?', query: 'Does PubSeal replace official government copyright?' },
+    { label: '🔒 Who owns my manuscript?', query: 'Who owns the copyright of uploaded manuscripts?' },
+    { label: '📝 How to register work', query: 'How do I register a new manuscript?' },
     { label: '🔍 How to verify', query: 'How does manuscript verification work?' },
-    { label: '📊 AI Readiness Score', query: 'What is the AI Copyright Readiness score?' },
-    { label: '📁 Go to Dashboard', query: 'Take me to my author dashboard' },
-    { label: '📜 Terms of Service', query: 'Show me the terms and legal disclaimers' }
+    { label: '💰 Is it free?', query: 'How much does PubSeal cost?' },
+    { label: '🖋️ Can I use a pen name?', query: 'Can I use a pen name or pseudonym?' },
+    { label: '📁 Go to Dashboard', query: 'Take me to my author dashboard' }
   ];
 
-  // Auto-scroll to bottom of chat
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -453,7 +596,6 @@ Whether you need help registering a manuscript, understanding SHA-256 timestamps
     }
   }, [messages, isOpen, isTyping]);
 
-  // Auto-dismiss the greeting toast after 10 seconds
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowToast(false);
@@ -461,7 +603,6 @@ Whether you need help registering a manuscript, understanding SHA-256 timestamps
     return () => clearTimeout(timer);
   }, []);
 
-  // Close on Escape key
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape' && isOpen) {
@@ -487,9 +628,9 @@ Whether you need help registering a manuscript, understanding SHA-256 timestamps
     setInputValue('');
     setIsTyping(true);
 
-    // Natural assistant thinking delay (350ms)
+    // Natural assistant response delay (300ms)
     setTimeout(() => {
-      const match = matchUserQuery(text, user, location.pathname);
+      const match = findBestIntent(text, user, location.pathname);
       const sageMessage = {
         id: `sage-${Date.now()}`,
         sender: 'sage',
@@ -500,10 +641,17 @@ Whether you need help registering a manuscript, understanding SHA-256 timestamps
       };
       setMessages((prev) => [...prev, sageMessage]);
       setIsTyping(false);
-    }, 380);
+    }, 320);
   };
 
   const handleActionClick = (path) => {
+    // If the action is a simulated query
+    if (path.startsWith('__query:')) {
+      const q = path.replace('__query:', '');
+      handleSendMessage(q);
+      return;
+    }
+
     if (path.startsWith('/#')) {
       const hash = path.replace('/#', '');
       navigate('/');
@@ -514,7 +662,7 @@ Whether you need help registering a manuscript, understanding SHA-256 timestamps
     } else {
       navigate(path);
     }
-    // On small screens, close the chat to allow user to view the page
+
     if (window.innerWidth < 640) {
       setIsOpen(false);
     }
@@ -525,11 +673,12 @@ Whether you need help registering a manuscript, understanding SHA-256 timestamps
       {
         id: `init-${Date.now()}`,
         sender: 'sage',
-        text: `Conversation refreshed. How may I guide you across PubSeal today, ${user ? user.fullName : 'Author'}?`,
+        title: 'Conversation Restarted',
+        text: `Conversation refreshed. How may I assist you with your questions or doubts today, ${user ? user.fullName : 'Author'}?`,
         actions: [
+          { label: 'Do I Need Documents to Sign Up?', path: '__query:do i need documents to create an account', icon: 'HelpCircle' },
           { label: 'Register a Work', path: '/register-work', icon: 'FileCheck2' },
-          { label: 'Public Verification', path: '/verify', icon: 'ShieldCheck' },
-          { label: 'Author Ownership Guarantee', path: '/terms#author-ownership', icon: 'Lock' }
+          { label: 'Public Verification', path: '/verify', icon: 'ShieldCheck' }
         ],
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       }
@@ -549,7 +698,7 @@ Whether you need help registering a manuscript, understanding SHA-256 timestamps
               Meet Sage • Platform Guide
             </p>
             <p className="text-[11px] text-mocha-300 leading-snug mt-0.5">
-              Have doubts about copyright or registration? Ask Sage!
+              Have doubts about documents or registration? Ask Sage!
             </p>
           </div>
           <button
@@ -564,7 +713,7 @@ Whether you need help registering a manuscript, understanding SHA-256 timestamps
 
       {/* 2. CHAT WINDOW MODAL */}
       {isOpen && (
-        <div className="mb-3 w-[calc(100vw-2.5rem)] sm:w-[410px] h-[580px] max-h-[82vh] rounded-3xl bg-mocha-950/95 border border-mocha-700/80 shadow-2xl shadow-black/80 flex flex-col overflow-hidden backdrop-blur-xl animate-fade-in">
+        <div className="mb-3 w-[calc(100vw-2.5rem)] sm:w-[420px] h-[590px] max-h-[82vh] rounded-3xl bg-mocha-950/95 border border-mocha-700/80 shadow-2xl shadow-black/80 flex flex-col overflow-hidden backdrop-blur-xl animate-fade-in">
           {/* Header */}
           <div className="p-4 bg-gradient-to-r from-mocha-900 via-mocha-900/95 to-mocha-950 border-b border-mocha-800/90 flex items-center justify-between shrink-0">
             <div className="flex items-center space-x-3">
@@ -572,7 +721,6 @@ Whether you need help registering a manuscript, understanding SHA-256 timestamps
                 <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-gold-500/25 to-mocha-800 border border-gold-500/40 flex items-center justify-center text-gold-300 shadow-sm">
                   <Sparkles className="w-5 h-5 text-gold-400" />
                 </div>
-                {/* Active status pulse */}
                 <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-500 border-2 border-mocha-950 flex items-center justify-center">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-200 animate-ping opacity-75" />
                 </span>
@@ -589,7 +737,7 @@ Whether you need help registering a manuscript, understanding SHA-256 timestamps
                 <p className="text-[11px] text-mocha-400 font-mono flex items-center space-x-1">
                   <span>Active Now</span>
                   <span>•</span>
-                  <span className="truncate max-w-[140px] text-mocha-400/80">
+                  <span className="truncate max-w-[150px] text-mocha-400/80">
                     {location.pathname === '/' ? 'Home' : location.pathname}
                   </span>
                 </p>
@@ -681,7 +829,7 @@ Whether you need help registering a manuscript, understanding SHA-256 timestamps
               <div className="flex items-center space-x-2 text-mocha-400 p-2 rounded-xl bg-mocha-900/50 w-fit animate-pulse">
                 <Sparkles className="w-3.5 h-3.5 text-gold-400" />
                 <span className="text-[11px] font-mono text-gold-300/80">
-                  Sage is contemplating...
+                  Sage is formulating an answer...
                 </span>
               </div>
             )}
@@ -716,7 +864,7 @@ Whether you need help registering a manuscript, understanding SHA-256 timestamps
         </div>
       )}
 
-      {/* 3. FLOATING TRIGGER BUTTON (When collapsed or open) */}
+      {/* 3. FLOATING TRIGGER BUTTON */}
       <button
         onClick={() => {
           setIsOpen(!isOpen);
@@ -729,7 +877,6 @@ Whether you need help registering a manuscript, understanding SHA-256 timestamps
         }`}
         title={isOpen ? 'Close Sage Assistant' : 'Ask Sage — PubSeal AI Navigator'}
       >
-        {/* Ambient pulse ring when closed */}
         {!isOpen && (
           <span className="absolute inset-0 rounded-2xl bg-gold-500/20 animate-ping opacity-30 pointer-events-none" />
         )}
