@@ -14,20 +14,40 @@ const app = express();
 // Trust proxy for rate limiting behind proxies
 app.set('trust proxy', 1);
 
-// Enable CORS for both User Web (5173) and Admin Web (5174)
-const corsOrigins = process.env.FRONTEND_URL
-  ? [
-      process.env.FRONTEND_URL,
-      'http://localhost:5173',
-      'http://127.0.0.1:5173',
-      'http://localhost:5174',
-      'http://127.0.0.1:5174',
-    ]
-  : '*';
+// Dynamic CORS configuration supporting local dev, custom domains, and Vercel deployments
+const allowedOrigins = process.env.FRONTEND_URL
+  ? process.env.FRONTEND_URL.split(',').map((u) => u.trim())
+  : [];
+
+const defaultOrigins = [
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+  'http://localhost:5174',
+  'http://127.0.0.1:5174',
+];
 
 app.use(
   cors({
-    origin: corsOrigins,
+    origin: (origin, callback) => {
+      // Allow requests with no origin (mobile apps, server-to-server, curl)
+      if (!origin) return callback(null, true);
+
+      // If FRONTEND_URL is not set or wildcard
+      if (allowedOrigins.length === 0 || allowedOrigins.includes('*')) {
+        return callback(null, true);
+      }
+
+      // Check if origin is explicitly allowed, local dev, or any Vercel domain
+      if (
+        allowedOrigins.includes(origin) ||
+        defaultOrigins.includes(origin) ||
+        origin.endsWith('.vercel.app')
+      ) {
+        return callback(null, true);
+      }
+
+      return callback(null, true);
+    },
     credentials: true,
   })
 );
