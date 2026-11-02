@@ -865,9 +865,13 @@ Whether you're wondering what you need to create an account, how cryptographic t
     <div className="fixed bottom-5 right-5 z-50 flex flex-col items-end select-none">
       {/* 1. GREETING SPEECH BUBBLE TOAST (When collapsed) */}
       {!isOpen && showToast && (
-        <div className="mb-3 animate-fade-in flex items-center space-x-2 p-3 sm:p-3.5 rounded-2xl bg-mocha-900/95 border border-gold-500/40 shadow-mocha-deep text-xs text-mocha-100 max-w-[270px] sm:max-w-xs backdrop-blur-md">
-          <div className="w-8 h-8 rounded-full bg-gold-500/20 border border-gold-400/40 flex items-center justify-center text-gold-300 shrink-0">
-            <Sparkles className="w-4 h-4" />
+        <div className="mb-3 animate-fade-in flex items-center space-x-2.5 p-3 sm:p-3.5 rounded-2xl bg-mocha-900/95 border border-gold-500/40 shadow-mocha-deep text-xs text-mocha-100 max-w-[270px] sm:max-w-xs backdrop-blur-md">
+          <div className="w-9 h-9 rounded-full bg-gold-500/20 border border-gold-400/40 flex items-center justify-center p-1.5 text-gold-300 shrink-0 overflow-hidden shadow-inner-gold">
+            <img
+              src="/PubSeal_logo_gold_tight.png"
+              alt="PubSeal Angel"
+              className="w-full h-full object-contain filter drop-shadow-[0_0_6px_rgba(203,159,84,0.6)]"
+            />
           </div>
           <div className="flex-1 pr-1">
             <p className="font-serif font-bold text-gold-300 text-[11px] uppercase tracking-wider">
@@ -894,8 +898,12 @@ Whether you're wondering what you need to create an account, how cryptographic t
           <div className="p-4 bg-gradient-to-r from-mocha-900 via-mocha-900/95 to-mocha-950 border-b border-mocha-800/90 flex items-center justify-between shrink-0">
             <div className="flex items-center space-x-3">
               <div className="relative">
-                <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-gold-500/25 to-mocha-800 border border-gold-500/40 flex items-center justify-center text-gold-300 shadow-sm">
-                  <Sparkles className="w-5 h-5 text-gold-400" />
+                <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-gold-500/20 via-mocha-900 to-mocha-950 border border-gold-500/40 flex items-center justify-center p-1.5 shadow-sm overflow-hidden">
+                  <img
+                    src="/PubSeal_logo_gold_tight.png"
+                    alt="Sage PubSeal Angel Crest"
+                    className="w-full h-full object-contain filter drop-shadow-[0_0_8px_rgba(203,159,84,0.6)]"
+                  />
                 </div>
                 <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-500 border-2 border-mocha-950 flex items-center justify-center">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-200 animate-ping opacity-75" />
@@ -970,7 +978,11 @@ Whether you're wondering what you need to create an account, how cryptographic t
                   {/* Title if present (for technical/legal knowledge items) */}
                   {msg.title && (
                     <div className="font-serif font-bold text-gold-300 text-xs pb-1 mb-1.5 border-b border-mocha-800/80 flex items-center space-x-1.5">
-                      <Sparkles className="w-3.5 h-3.5 text-gold-400 shrink-0" />
+                      <img
+                        src="/PubSeal_logo_gold_tight.png"
+                        alt="Angel"
+                        className="w-3.5 h-3.5 object-contain shrink-0 filter drop-shadow-[0_0_4px_rgba(203,159,84,0.5)]"
+                      />
                       <span>{msg.title}</span>
                     </div>
                   )}
@@ -1003,7 +1015,11 @@ Whether you're wondering what you need to create an account, how cryptographic t
             {/* Typing Indicator */}
             {isTyping && (
               <div className="flex items-center space-x-2 text-mocha-400 p-2 rounded-xl bg-mocha-900/50 w-fit animate-pulse">
-                <Sparkles className="w-3.5 h-3.5 text-gold-400" />
+                <img
+                  src="/PubSeal_logo_gold_tight.png"
+                  alt="Sage Angel"
+                  className="w-4 h-4 object-contain animate-bounce"
+                />
                 <span className="text-[11px] font-mono text-gold-300/80">
                   Sage is typing...
                 </span>
@@ -1058,11 +1074,15 @@ Whether you're wondering what you need to create an account, how cryptographic t
         )}
 
         {isOpen ? (
-          <X className="w-6 h-6 transition-transform group-hover:rotate-90" />
+          <X className="w-6 h-6 transition-transform group-hover:rotate-90 text-gold-300" />
         ) : (
           <div className="relative flex items-center justify-center">
-            <Sparkles className="w-6 h-6 text-gold-400 filter drop-shadow-[0_0_8px_rgba(203,159,84,0.6)]" />
-            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-emerald-400 border border-mocha-950" />
+            <img
+              src="/PubSeal_logo_gold_tight.png"
+              alt="PubSeal Angel"
+              className="w-9 h-9 object-contain filter drop-shadow-[0_0_10px_rgba(203,159,84,0.75)] group-hover:scale-110 transition-transform duration-300"
+            />
+            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-mocha-950" />
           </div>
         )}
       </button>
